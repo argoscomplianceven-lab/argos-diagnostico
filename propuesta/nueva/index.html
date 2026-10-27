@@ -79,7 +79,9 @@
     <p class="label" style="margin-top:12px">Lo que incluye</p>
     <ul class="list" id="alc"></ul>
     <div class="prod">
-      <label><span class="rec">Recomendado</span><span><input type="radio" name="prod" value="plan" checked> Plan mensual</span><b>US$200 <small class="muted">+ IVA / mes</small></b><span class="small muted">Instalación única <span id="inst-amt">US$600</span> + IVA, con 16 horas de configuración y capacitación. Sin permanencia.</span></label>
+      <label><span><input type="radio" name="prod" value="mensual" checked> Plan mensual</span><b>US$200 <small class="muted">+ IVA / mes</small></b><span class="small muted">Sin permanencia. Instalación única: <span class="inst-amt">US$600</span> + IVA, con 16 horas de configuración y capacitación.</span></label>
+      <label><span><input type="radio" name="prod" value="semestral"> Plan semestral</span><b>US$180 <small class="muted">+ IVA / mes</small></b><span class="small muted">Se paga US$1.080 + IVA por adelantado cada 6 meses. Ahorra 10% frente al mensual. Instalación única: <span class="inst-amt">US$600</span> + IVA.</span></label>
+      <label><span class="rec">Mejor precio</span><span><input type="radio" name="prod" value="anual"> Plan anual</span><b>US$170 <small class="muted">+ IVA / mes</small></b><span class="small muted">Se paga US$2.040 + IVA por adelantado cada 12 meses. Ahorra 15% frente al mensual. Instalación única: <span class="inst-amt">US$600</span> + IVA.</span></label>
       <label><span><input type="radio" name="prod" value="unica"> Consulta única</span><b>US$20 <small class="muted">+ IVA / consulta</small></b><span class="small muted">Sin plan ni instalación.</span>
         <span class="f" id="q-wrap">Cantidad de consultas <input id="q" type="number" min="1" value="1" style="max-width:120px"></span></label>
     </div>
@@ -111,7 +113,7 @@
 (function () {
   // La instalación del plan depende del sector elegido (empresas de seguros y reaseguradoras: US$1.200).
   document.addEventListener("change", function (e) {
-    if (e.target.id === "sec") $("inst-amt").textContent = "US$" + A.instalacionPara(e.target.value).toLocaleString("es-VE");
+    if (e.target.id === "sec") document.querySelectorAll(".inst-amt").forEach(function (s) { s.textContent = "US$" + A.instalacionPara(e.target.value).toLocaleString("es-VE"); });
   });
   var A = window.Argos, $ = function (id) { return document.getElementById(id); }, step = 1, diag = null;
   var qp = new URLSearchParams(location.search);
@@ -147,10 +149,12 @@
   $("alc").innerHTML = A.ALCANCE.map(function (a) { return "<li><span>" + A.esc(a.t) + "</span></li>"; }).join("");
 
   function prod() { return document.querySelector('input[name="prod"]:checked').value; }
+  // Pedido elegido: "unica" o un plan ("mensual" | "semestral" | "anual").
+  function pedido() { return prod() === "unica" ? { prod: "unica", q: Math.max(1, +$("q").value || 1) } : { prod: "plan", plazo: prod() }; }
   function money() {
-    var mm = A.montos({ prod: prod(), q: $("q").value, sec: $("sec").value });
+    var mm = A.montos(Object.assign({ sec: $("sec").value }, pedido()));
     $("money").innerHTML = '<table class="money"><tbody>' + mm.lines.map(function (l) { return "<tr><td>" + A.esc(l.t) + '</td><td class="n">' + A.usd(l.m) + "</td></tr>"; }).join("") +
-      '<tr><td>IVA (16%)</td><td class="n">' + A.usd(mm.iva) + '</td></tr><tr class="total"><td>' + (prod() === "plan" ? "Primer pago (primer mes + instalación)" : "Total") + '</td><td class="n">' + A.usd(mm.total) + "</td></tr></tbody></table>";
+      '<tr><td>IVA (16%)</td><td class="n">' + A.usd(mm.iva) + '</td></tr><tr class="total"><td>' + (prod() !== "unica" ? "Primer pago (plan + instalación)" : "Total") + '</td><td class="n">' + A.usd(mm.total) + "</td></tr></tbody></table>";
     $("q-wrap").style.opacity = prod() === "unica" ? 1 : .4;
   }
   document.querySelectorAll('input[name="prod"]').forEach(function (r) { r.addEventListener("change", money); });
@@ -168,7 +172,8 @@
   function data() {
     var c = {}; F.forEach(function (k) { c[k] = $(k).value.trim(); });
     c.rif = idNum() ? $("rift").value + "-" + idNum() : "";
-    return { v: 1, c: c, alc: A.ALCANCE.map(function (a) { return a.k; }), prod: prod(), q: Math.max(1, +$("q").value || 1),
+    var pd = pedido();
+    return { v: 1, c: c, alc: A.ALCANCE.map(function (a) { return a.k; }), prod: pd.prod, plazo: pd.plazo || null, q: Math.max(1, +$("q").value || 1),
       d: diag && diag.gaps ? { lv: diag.lv, pct: diag.pct, h: +diag.h || 0, hl: +diag.hl || 0, gaps: diag.gaps } : null, s: { n: $("ase").value.trim().slice(0, 60), w: ase.wa, c: ase.c || "" } };
   }
   function missing() {
@@ -183,7 +188,7 @@
     $("review").innerHTML = '<div class="kv" style="border-top:0;margin-top:0;padding-top:0">' +
       "<div><span>Empresa</span><b>" + A.esc(p.c.rs || "—") + "</b></div><div><span>Identificación</span><b>" + A.esc(p.c.rif || "—") + "</b></div>" +
       "<div><span>Contacto</span><b>" + A.esc(p.c.con || "—") + "</b></div><div><span>Correo</span><b>" + A.esc(p.c.mail || "—") + "</b></div>" +
-      "<div><span>Plan</span><b>" + (p.prod === "plan" ? "Plan mensual" : "Consulta única × " + p.q) + "</b></div><div><span>Primer pago</span><b>" + A.usd(mm.total) + "</b></div>" +
+      "<div><span>Plan</span><b>" + (p.prod === "plan" ? A.esc(A.PLAN[p.plazo].t) : "Consulta única × " + p.q) + "</b></div><div><span>" + (p.prod === "plan" ? "Pago inicial" : "Total") + "</span><b>" + A.usd(mm.total) + "</b></div>" +
       "<div><span>Su asesor</span><b>" + A.esc(p.s.n || "—") + "</b></div><div><span>Vigencia</span><b>15 días</b></div></div>";
   }
   function go(s) {
@@ -204,7 +209,7 @@
     var p = data();
     p.num = A.numero(iniciales(p.s.n)); p.f = A.hoy(); p.vig = A.VIGENCIA_DIAS;
     p.cons = { v: "2026-10-15", at: new Date().toISOString() };
-    var url = new URL("../", location.href).href + "#p=" + A.b64enc(p);
+    var url = new URL("../index.html", location.href).href + "#p=" + A.b64enc(p);
     A.lead({ t: "new", p: p, url: url, hp: $("web").value });
     location.href = url;
   });

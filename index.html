@@ -93,6 +93,17 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   <div id="test">
     <h1>¿Qué le falta hoy a su debida diligencia?</h1>
     <p class="lede">Trece preguntas rápidas: primero lo que exige la norma, después cómo lo hacen hoy. Toque la respuesta que más se parezca a su realidad.</p>
+    <section class="card" id="precios">
+      <p class="label">Precios</p>
+      <ul class="gaps">
+        <li><b>Plan mensual: US$200 + IVA al mes.</b> Acceso a la plataforma, consultas, matriz de riesgo, revisión de la cartera y constancias en PDF. Hasta 2.000 consultas al año. Sin permanencia.</li>
+        <li><b>Plan semestral: US$1.080 + IVA por 6 meses</b> (US$180 al mes). Ahorra 10% frente al plan mensual.</li>
+        <li><b>Plan anual: US$2.040 + IVA por 12 meses</b> (US$170 al mes). Ahorra 15% frente al plan mensual.</li>
+        <li><b>Instalación única: US$600 + IVA.</b> Incluye la configuración inicial, la carga de su cartera y 16 horas de capacitación. Para empresas de seguros y reaseguradoras: US$1.200 + IVA.</li>
+        <li><b>Consulta única: US$20 + IVA por consulta.</b> Sin plan ni instalación.</li>
+      </ul>
+      <p style="font-size:13px;color:#4F5C6B">Precios en dólares de los Estados Unidos de América como moneda de cuenta. El pago se realiza en bolívares a la tasa oficial del BCV del día del pago. La propuesta vence a los 15 días de emitida.</p>
+    </section>
     <section class="card" id="qs"></section>
     <div class="bar">
       <span><strong id="count">0</strong> de <span id="total">0</span> respondidas <small>· Lo que no responda cuenta como brecha</small></span>
@@ -130,7 +141,7 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
       <div><div style="font-size:12px;opacity:.85">Escríbanos por WhatsApp</div><div class="phone" id="phone">0424-125.04.68</div><div style="font-size:12px;opacity:.85" id="who"></div></div>
     </section>
     <div class="actions" style="margin-bottom:12px">
-      <a class="btn primary" id="to-prop" href="propuesta/nueva/" style="text-decoration:none;font-size:16px;padding:16px 22px">Continuar: recibir mi propuesta →</a>
+      <a class="btn primary" id="to-prop" href="propuesta/nueva/index.html" style="text-decoration:none;font-size:16px;padding:16px 22px">Continuar: recibir mi propuesta →</a>
     </div>
     <div class="actions">
       <button class="btn ghost" id="edit">Cambiar respuestas</button>
@@ -263,7 +274,7 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
     var pay = {lv: r.lv, pct: r.pct, h: Math.round(r.hrs * 10) / 10, hl: Math.round(Math.max(r.hrs - r.argosHrs, 0) * 10) / 10, gaps: r.gaps.map(function (g) { return [g.gap, g.internal ? 0 : 1, g.only ? 1 : 0]; })};
     var bin = ""; new TextEncoder().encode(JSON.stringify(pay)).forEach(function (b) { bin += String.fromCharCode(b); });
     var enc = btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    $("to-prop").href = "propuesta/nueva/" + location.search + "#d=" + enc;
+    $("to-prop").href = "propuesta/nueva/index.html" + location.search + "#d=" + enc;
     $("test").hidden = true; $("result").hidden = false; window.scrollTo(0, 0);
   }
   $("go").addEventListener("click", show);

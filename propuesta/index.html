@@ -296,6 +296,10 @@
   $("doc").hidden = false;
   document.title = "Propuesta " + p.num + " · " + p.c.rs;
   var vence = A.sumarDias(p.f, p.vig || A.VIGENCIA_DIAS), plan = p.prod === "plan", mm = A.montos(p);
+  // Plazo del plan: mensual (por defecto), semestral o anual. Las propuestas anteriores al cambio son mensuales.
+  var plazo = plan && A.PLAN[p.plazo] ? p.plazo : "mensual", pl = plan ? A.PLAN[plazo] : null;
+  var PT = { mensual: "plan mensual", semestral: "plan semestral de 6 meses", anual: "plan anual de 12 meses" };
+  var PERIODO = plazo === "mensual" ? " + IVA al mes" : " + IVA por " + pl.meses + " meses";
   function set(id, v) { $(id).textContent = v; }
   set("t-num", p.num); set("h-num", p.num); set("h-rs", p.c.rs); set("h-f", A.fecha(p.f)); set("h-vig", A.fecha(vence)); set("h-s", p.s.n); set("a-rs", p.c.rs);
   set("num-run", p.num); set("cv-rs", p.c.rs); set("cv-num", p.num); set("cv-f", A.fecha(p.f)); set("cv-vig", A.fecha(vence)); set("cv-s", p.s.n);
@@ -309,8 +313,8 @@
   var nb = p.d && p.d.gaps ? p.d.gaps.length : 0, na = nb ? p.d.gaps.filter(function (g) { return g[1]; }).length : 0;
   set("sum1", nb ? "El diagnóstico de " + p.c.rs + " dio un nivel de riesgo de cumplimiento " + p.d.lv + ", con " + nb + " brechas. Argos cubre " + na + " de ellas desde el primer día." :
     p.c.rs + " necesita verificar a sus clientes, empleados y proveedores contra listas restrictivas y personas expuestas políticamente, y poder demostrarlo ante una inspección.");
-  set("sum2", "Proponemos " + (plan ? "el plan mensual de Argos: consultas a listas restrictivas, PEP, sentencias del TSJ y prensa en segundos, con matriz de riesgo, revisión de la cartera y el registro de cada consulta." : p.q + " consulta(s) única(s) de Argos, sin plan ni instalación."));
-  set("sum3", "Inversión: " + (plan ? A.usd(A.PRECIOS.plan) + " + IVA al mes y una instalación única de " + A.usd(A.instalacionPara(p.c.sec)) + " + IVA." : A.usd(A.PRECIOS.consulta) + " + IVA por consulta.") + " Propuesta vigente hasta el " + A.fecha(vence) + ".");
+  set("sum2", "Proponemos " + (plan ? "el " + PT[plazo] + " de Argos: consultas a listas restrictivas, PEP, sentencias del TSJ y prensa en segundos, con matriz de riesgo, revisión de la cartera y el registro de cada consulta." : p.q + " consulta(s) única(s) de Argos, sin plan ni instalación."));
+  set("sum3", "Inversión: " + (plan ? A.usd(pl.m) + PERIODO + " y una instalación única de " + A.usd(A.instalacionPara(p.c.sec)) + " + IVA." : A.usd(A.PRECIOS.consulta) + " + IVA por consulta.") + " Propuesta vigente hasta el " + A.fecha(vence) + ".");
 
   if (nb) {
     $("sec-diag").hidden = false;
@@ -332,13 +336,14 @@
   set("alc-head", plan ? "Lo que recibe con su plan" : "Lo que recibe");
   [].forEach.call(document.querySelectorAll(".plan-only"), function (el) { el.hidden = !plan; });
   $("reprice").innerHTML = plan ?
-    "<p>Todo lo anterior por <b>" + A.usd(A.PRECIOS.plan) + " + IVA al mes</b>, más una instalación única de <b>" + A.usd(A.instalacionPara(p.c.sec)) + " + IVA</b> que incluye la carga de su cartera, su matriz parametrizada y 16 horas de capacitación.</p><p>Esta propuesta vence el <b>" + A.esc(A.fecha(vence)) + "</b>.</p>" :
+    "<p>Todo lo anterior por <b>" + A.usd(pl.m) + PERIODO + "</b>, más una instalación única de <b>" + A.usd(A.instalacionPara(p.c.sec)) + " + IVA</b> que incluye la carga de su cartera, su matriz parametrizada y 16 horas de capacitación.</p><p>Esta propuesta vence el <b>" + A.esc(A.fecha(vence)) + "</b>.</p>" :
     "<p>Todo lo anterior por <b>" + A.usd(mm.total) + "</b> con IVA.</p><p>Esta propuesta vence el <b>" + A.esc(A.fecha(vence)) + "</b>.</p>";
   var FAQ = [
     ["¿Argos me exime de mi responsabilidad como sujeto obligado?", "No. Argos le entrega la evidencia de cada consulta para que su empresa decida. La evaluación de cada coincidencia, la decisión y la responsabilidad siguen siendo de su empresa."],
     ["¿Qué pasa con los datos de mis clientes?", "Argos los trata por cuenta y siguiendo las instrucciones de su empresa, solo para prestarle el servicio. Si cancela, tiene 30 días continuos para descargar su información."],
     ["¿Cómo se paga?", "Únicamente en bolívares, al tipo de cambio oficial del BCV de la fecha del pago. Los precios se expresan en dólares como referencia."],
-    plan ? ["¿Tengo que firmar por un tiempo mínimo?", "No. El plan es mes a mes y puede cancelarlo antes del inicio del mes siguiente."] : null,
+    plan && plazo === "mensual" ? ["¿Tengo que firmar por un tiempo mínimo?", "No. El plan es mes a mes y puede cancelarlo antes del inicio del mes siguiente."] : null,
+    plan && plazo !== "mensual" ? ["¿Tengo que firmar por un tiempo mínimo?", "Sí: el " + PT[plazo] + " cubre todo el período que elige, pagado por adelantado. [verificar: condiciones de cancelación anticipada y renovación de los planes semestral y anual]"] : null,
     plan ? ["¿Qué incluye la instalación?", "La carga inicial de su cartera, la parametrización de su matriz de riesgo, la creación de sus usuarios y 16 horas de configuración y capacitación."] : null,
     ["¿Qué pasa si una fuente no está disponible al momento de la consulta?", "La constancia lo indica de forma visible. En ese caso, la ausencia de coincidencias no debe leerse como un resultado limpio."],
     ["Mi empresa es nueva o tiene pocos clientes. ¿Me sirve?", "Sí. Desde el primer cliente, cada consulta queda registrada y respaldada con su constancia, y su cartera crece ya revisada."]
@@ -350,8 +355,8 @@
 
   $("money").innerHTML = '<table class="money"><thead><tr><th>Concepto</th><th class="n">Monto</th></tr></thead><tbody>' +
     mm.lines.map(function (l) { return "<tr><td>" + A.esc(l.t) + '</td><td class="n">' + A.usd(l.m) + "</td></tr>"; }).join("") +
-    '<tr><td>IVA (16%)</td><td class="n">' + A.usd(mm.iva) + '</td></tr><tr class="total"><td>' + (plan ? "Primer pago (primer mes + instalación)" : "Total") + '</td><td class="n">' + A.usd(mm.total) + "</td></tr></tbody></table>" +
-    (plan ? '<p class="small" style="margin:10px 0 0">Luego, <b>' + A.usd(A.PRECIOS.plan) + " + IVA</b> por mes.</p>" : "");
+    '<tr><td>IVA (16%)</td><td class="n">' + A.usd(mm.iva) + '</td></tr><tr class="total"><td>' + (plan ? (plazo === "mensual" ? "Primer pago (primer mes + instalación)" : "Pago inicial (plan + instalación)") : "Total") + '</td><td class="n">' + A.usd(mm.total) + "</td></tr></tbody></table>" +
+    (plan ? '<p class="small" style="margin:10px 0 0">' + (plazo === "mensual" ? "Luego, <b>" + A.usd(pl.m) + " + IVA</b> por mes." : "Este pago cubre los " + pl.meses + " meses del plan. [verificar: fecha y condiciones de la siguiente renovación]") + "</p>" : "");
 
   // Condiciones comerciales (Términos y Condiciones v2.0, sección 9)
   var C = [
