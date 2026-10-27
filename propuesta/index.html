@@ -78,7 +78,7 @@
     .cover { height: 297mm; display: flex; flex-direction: column; background: var(--navy); color: var(--on-navy); padding: 22mm 20mm 18mm; break-after: page; }
     .cover img { height: 18mm; width: auto; align-self: flex-start; }
     .cover .k { font: 600 9pt var(--sans); letter-spacing: 1.5px; text-transform: uppercase; color: #E0BE6A; margin-top: 48mm; }
-    .cover h1 { color: var(--on-navy); font-size: 30pt; line-height: 1.2; margin: 6mm 0 4mm; }
+    .cover h1 { color: var(--on-navy); font-size: 30pt; line-height: 1.3; margin: 6mm 0 4mm; }
     .cover .tag2 { font-size: 13pt; color: #C9D4E0; max-width: 140mm; }
     .cover .meta { margin-top: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6mm 10mm; border-top: 1px solid #24486B; padding-top: 8mm; }
     .cover .meta span { display: block; font: 600 7.5pt var(--sans); letter-spacing: 1px; text-transform: uppercase; color: #A9B8C8; }
@@ -88,6 +88,7 @@
     .reprice { border-radius: 0; padding: 5mm 6mm; margin: 0 0 9mm; break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .commit li::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .benef, .bonus, .faq div, .commit li { break-inside: avoid; }
+    .pend { background: #FFF2A8; color: #3B2F00; padding: 0 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 </head>
@@ -348,7 +349,7 @@
     ["¿Qué pasa si una fuente no está disponible al momento de la consulta?", "La constancia lo indica de forma visible. En ese caso, la ausencia de coincidencias no debe leerse como un resultado limpio."],
     ["Mi empresa es nueva o tiene pocos clientes. ¿Me sirve?", "Sí. Desde el primer cliente, cada consulta queda registrada y respaldada con su constancia, y su cartera crece ya revisada."]
   ].filter(Boolean);
-  $("faq").innerHTML = FAQ.map(function (q) { return "<div><dt>" + A.esc(q[0]) + "</dt><dd>" + A.esc(q[1]) + "</dd></div>"; }).join("");
+  $("faq").innerHTML = FAQ.map(function (q) { return "<div><dt>" + A.esc(q[0]) + "</dt><dd>" + A.esc(q[1]).replace(/\[verificar:[^\]]*\]/g, function (m) { return '<mark class="pend">' + m + "</mark>"; }) + "</dd></div>"; }).join("");
 
   var byK = {}; A.ALCANCE.forEach(function (a) { byK[a.k] = a.t; });
   $("alc").innerHTML = (p.alc || []).filter(function (k) { return byK[k]; }).map(function (k) { return "<li><span>" + A.esc(byK[k]) + "</span></li>"; }).join("");
@@ -356,7 +357,7 @@
   $("money").innerHTML = '<table class="money"><thead><tr><th>Concepto</th><th class="n">Monto</th></tr></thead><tbody>' +
     mm.lines.map(function (l) { return "<tr><td>" + A.esc(l.t) + '</td><td class="n">' + A.usd(l.m) + "</td></tr>"; }).join("") +
     '<tr><td>IVA (16%)</td><td class="n">' + A.usd(mm.iva) + '</td></tr><tr class="total"><td>' + (plan ? (plazo === "mensual" ? "Primer pago (primer mes + instalación)" : "Pago inicial (plan + instalación)") : "Total") + '</td><td class="n">' + A.usd(mm.total) + "</td></tr></tbody></table>" +
-    (plan ? '<p class="small" style="margin:10px 0 0">' + (plazo === "mensual" ? "Luego, <b>" + A.usd(pl.m) + " + IVA</b> por mes." : "Este pago cubre los " + pl.meses + " meses del plan. [verificar: fecha y condiciones de la siguiente renovación]") + "</p>" : "");
+    (plan ? '<p class="small" style="margin:10px 0 0">' + (plazo === "mensual" ? "Luego, <b>" + A.usd(pl.m) + " + IVA</b> por mes." : "Este pago cubre los " + pl.meses + ' meses del plan. <mark class="pend">[verificar: fecha y condiciones de la siguiente renovación]</mark>') + "</p>" : "");
 
   // Condiciones comerciales (Términos y Condiciones v2.0, sección 9)
   var C = [

@@ -14,7 +14,7 @@ body { margin: 0; background: var(--surface-alt); color: var(--ink); font: 400 1
 header.top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 4px 0 16px; border-bottom: 2px solid var(--navy); margin-bottom: 18px; }
 header.top img { height: 56px; width: auto; display: block; }
 .tag { font: 600 11px/1.3 var(--sans); letter-spacing: 1px; text-transform: uppercase; color: var(--bronce-ink); text-align: right; }
-h1 { font: 600 28px/1.2 var(--sans); color: var(--navy); margin: 8px 0 6px; text-wrap: balance; }
+h1 { font: 600 28px/1.3 var(--sans); color: var(--navy); margin: 8px 0 6px; text-wrap: balance; }
 h2 { font: 600 19px/1.3 var(--sans); color: var(--navy); margin: 0 0 8px; }
 .lede { color: var(--ink-muted); margin: 0 0 18px; max-width: 66ch; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
