@@ -127,7 +127,7 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
     </section>
     <section class="cta">
       <p><strong class="big" id="cta-big"></strong>Continúe y reciba ahora su propuesta con todo lo que incluye el plan.</p>
-      <div><div style="font-size:12px;opacity:.85">Escríbanos por WhatsApp</div><div class="phone" id="phone">0424-125.04.68</div><div style="font-size:12px;opacity:.85" id="who"></div></div>
+      <div><div style="font-size:12px;opacity:.85">Escríbanos por WhatsApp</div><div class="phone" id="phone">0424-1250468</div><div style="font-size:12px;opacity:.85" id="who"></div></div>
     </section>
     <div class="actions" style="margin-bottom:12px">
       <a class="btn primary" id="to-prop" href="propuesta/nueva/index.html" style="text-decoration:none;font-size:16px;padding:16px 22px">Continuar: recibir mi propuesta →</a>
@@ -278,7 +278,7 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
     var btn = $("copy"), done = function () { btn.textContent = "Copiado"; setTimeout(function () { btn.textContent = "Copiar resumen"; }, 1500); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(function () { btn.textContent = "No se pudo copiar"; });
   });
-  var qp = new URLSearchParams(location.search), WA = "0424-125.04.68";
+  var qp = new URLSearchParams(location.search), WA = "0424-1250468";
   var ali = (window.ARGOS_ALIADOS || {})[(qp.get("a") || "").toUpperCase()];
   if (ali) { qp.set("wa", ali.w); qp.set("n", ali.n); }
   if (/^\d{10,13}$/.test(qp.get("wa") || "")) {

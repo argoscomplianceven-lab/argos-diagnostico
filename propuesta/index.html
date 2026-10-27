@@ -344,7 +344,7 @@
     ["¿Qué pasa con los datos de mis clientes?", "Argos los trata por cuenta y siguiendo las instrucciones de su empresa, solo para prestarle el servicio. Si cancela, tiene 30 días continuos para descargar su información."],
     ["¿Cómo se paga?", "Únicamente en bolívares, al tipo de cambio oficial del BCV de la fecha del pago. Los precios se expresan en dólares como referencia."],
     plan && plazo === "mensual" ? ["¿Tengo que firmar por un tiempo mínimo?", "No. El plan es mes a mes y puede cancelarlo antes del inicio del mes siguiente."] : null,
-    plan && plazo !== "mensual" ? ["¿Tengo que firmar por un tiempo mínimo?", "Sí: el " + PT[plazo] + " cubre todo el período que elige, pagado por adelantado. [verificar: condiciones de cancelación anticipada y renovación de los planes semestral y anual]"] : null,
+    plan && plazo !== "mensual" ? ["¿Tengo que firmar por un tiempo mínimo?", "Sí: el " + PT[plazo] + " cubre todo el período que elige, pagado por adelantado."] : null,
     plan ? ["¿Qué incluye la instalación?", "La carga inicial de su cartera, la parametrización de su matriz de riesgo, la creación de sus usuarios y 16 horas de configuración y capacitación."] : null,
     ["¿Qué pasa si una fuente no está disponible al momento de la consulta?", "La constancia lo indica de forma visible. En ese caso, la ausencia de coincidencias no debe leerse como un resultado limpio."],
     ["Mi empresa es nueva o tiene pocos clientes. ¿Me sirve?", "Sí. Desde el primer cliente, cada consulta queda registrada y respaldada con su constancia, y su cartera crece ya revisada."]
@@ -357,7 +357,7 @@
   $("money").innerHTML = '<table class="money"><thead><tr><th>Concepto</th><th class="n">Monto</th></tr></thead><tbody>' +
     mm.lines.map(function (l) { return "<tr><td>" + A.esc(l.t) + '</td><td class="n">' + A.usd(l.m) + "</td></tr>"; }).join("") +
     '<tr><td>IVA (16%)</td><td class="n">' + A.usd(mm.iva) + '</td></tr><tr class="total"><td>' + (plan ? (plazo === "mensual" ? "Primer pago (primer mes + instalación)" : "Pago inicial (plan + instalación)") : "Total") + '</td><td class="n">' + A.usd(mm.total) + "</td></tr></tbody></table>" +
-    (plan ? '<p class="small" style="margin:10px 0 0">' + (plazo === "mensual" ? "Luego, <b>" + A.usd(pl.m) + " + IVA</b> por mes." : "Este pago cubre los " + pl.meses + ' meses del plan. <mark class="pend">[verificar: fecha y condiciones de la siguiente renovación]</mark>') + "</p>" : "");
+    (plan ? '<p class="small" style="margin:10px 0 0">' + (plazo === "mensual" ? "Luego, <b>" + A.usd(pl.m) + " + IVA</b> por mes." : "Este pago cubre los " + pl.meses + ' meses del plan.') + "</p>" : "");
 
   // Condiciones comerciales (Términos y Condiciones v2.0, sección 9)
   var C = [
